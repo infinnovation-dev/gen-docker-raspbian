@@ -9,9 +9,18 @@ rootfsDir="$version"
 tarFile="raspbian-$version.image.tar.xz"
 mkdir -p "$rootfsDir"
 
+case "$version" in
+    buster)
+	include="iproute2,iputils-ping"
+	;;
+    *)
+	include="iproute,iputils-ping"
+	;;
+esac
+
 (
 	set -x
-	/usr/sbin/debootstrap --no-check-gpg --arch=armhf --verbose --variant='minbase' --include='iproute,iputils-ping' "$version" "$rootfsDir" http://archive.raspbian.org/raspbian/
+	/usr/sbin/debootstrap --no-check-gpg --arch=armhf --verbose --variant='minbase' --include=$include "$version" "$rootfsDir" http://archive.raspbian.org/raspbian/
 )
 
 # now for some Docker-specific tweaks
